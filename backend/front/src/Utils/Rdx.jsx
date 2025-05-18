@@ -1,92 +1,88 @@
-import Utils from "./Utils";
-import { createStore, combineReducers, applyMiddleware } from 'redux';
-import { createLogger } from 'redux-logger';
+/* ACTIONS */
 
-// Константы для типов действий
-export const userConstants = {
+import Utils from "./Utils";
+import {applyMiddleware, combineReducers, createStore} from "redux";
+import { createLogger } from 'redux-logger'
+
+const userConstants = {
     LOGIN: 'USER_LOGIN',
     LOGOUT: 'USER_LOGOUT',
 };
 
-// Константы для типов оповещений
-export const alertConstants = {
-    SUCCESS: 'ALERT_SUCCESS',
-    ERROR: 'ALERT_ERROR',
-    CLEAR: 'ALERT_CLEAR'
+const alertConstants = {
+    ERROR: 'ERROR',
+    CLEAR: 'CLEAR',
 };
 
-// Генераторы действий (Action Creators)
+
+/* ACTION GENERATORS */
+
 export const userActions = {
-    login(user) {
-        Utils.saveUser(user);
-        return { type: userConstants.LOGIN, user };
-    },
-    logout() {
-        Utils.removeUser();
-        return { type: userConstants.LOGOUT };
-    }
+    login,
+    logout
 };
+
+function login(user) {
+    Utils.saveUser(user)
+    return { type: userConstants.LOGIN, user }
+}
+
+function logout() {
+    Utils.removeUser()
+    return { type: userConstants.LOGOUT }
+}
 
 export const alertActions = {
-    success(message) {
-        return { type: alertConstants.SUCCESS, message };
-    },
-    error(message) {
-        return { type: alertConstants.ERROR, message };
-    },
-    clear() {
-        return { type: alertConstants.CLEAR };
-    }
+    error,
+    clear
 };
 
-// Начальное состояние для аутентификации
-let user = Utils.getUser();
-const initialState = user ? { user } : {};
+function error(msg) {
+    return { type: alertConstants.ERROR, msg }
+}
 
-// Редюсер для аутентификации
+function clear() {
+    return { type: alertConstants.CLEAR }
+}
+
+/* REDUСERS */
+
+let user =  Utils.getUser()
+const initialState = user ? { user } : {}
+
 function authentication(state = initialState, action) {
-    console.log("authentication");
+    console.log("authentication")
     switch (action.type) {
         case userConstants.LOGIN:
             return { user: action.user };
         case userConstants.LOGOUT:
             return { };
         default:
-            return state;
+            return state
     }
 }
 
-// Редюсер для обработки оповещений
 function alert(state = {}, action) {
+    console.log("alert")
     switch (action.type) {
-        case alertConstants.SUCCESS:
-            return {
-                type: 'success',
-                message: action.message
-            };
         case alertConstants.ERROR:
-            return {
-                type: 'error',
-                message: action.message
-            };
+            return { msg: action.msg };
         case alertConstants.CLEAR:
-            return {};
+            return { };
         default:
-            return state;
+            return state
     }
 }
 
-// Комбинирование редюсеров
+/* STORE */
+
 const rootReducer = combineReducers({
-    authentication,
-    alert
+    authentication, alert
 });
 
-// Middleware для логирования действий
 const loggerMiddleware = createLogger();
 
-// Создание хранилища с несколькими редюсерами и middleware
 export const store = createStore(
     rootReducer,
-    applyMiddleware(loggerMiddleware)
+    applyMiddleware( loggerMiddleware )
 );

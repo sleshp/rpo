@@ -9,7 +9,7 @@ class Home extends React.Component {
     render() {
         return (
             <div className="mt-5 me-auto">
-                <h2>RPO Art Frontend</h2>
+                <h2>SD Frontend</h2>
             </div>
         );
     }
